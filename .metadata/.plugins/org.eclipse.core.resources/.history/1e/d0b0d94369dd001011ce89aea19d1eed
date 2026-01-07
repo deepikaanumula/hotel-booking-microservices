@@ -1,0 +1,60 @@
+package com.hotel.booking_service.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.hotel.booking_service.entity.Booking;
+import com.hotel.booking_service.entity.BookingWithUserDTO;
+import com.hotel.booking_service.service.BookingService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@RestController
+@RequestMapping("/bookings")
+@Tag(name = "Booking API")
+public class BookingController {
+
+    @Autowired
+    private BookingService service;
+
+    // ✅ USER: Book a hotel
+    @PostMapping
+    public Booking book(@RequestBody Booking booking) {
+        return service.bookHotel(booking);
+    }
+
+    // ✅ USER: Get bookings by userId
+    @GetMapping("/user/{userId}")
+    public List<Booking> getByUser(@PathVariable Long userId) {
+        return service.getBookingsByUser(userId);
+    }
+
+    // ✅ USER: Cancel booking
+    @PutMapping("/{bookingId}/cancel")
+    public Booking cancel(@PathVariable Long bookingId) {
+        return service.cancelBooking(bookingId);
+    }
+
+    // ✅ ADMIN: Get all bookings
+    @GetMapping
+    public List<Booking> getAll() {
+        return service.getAllBookings();
+    }
+    
+   // @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/bookings")
+    public List<BookingWithUserDTO> getAllBookingsForAdmin() {
+        return service.getAllBookingsWithUser();
+    }
+
+}
+

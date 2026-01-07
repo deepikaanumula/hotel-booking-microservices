@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="MavenProjectImportWizardPage">
+		<list key="rootDirectory">
+			<item value="C:\Users\deepika.a\Desktop\Hotel\booking-service"/>
+			<item value="C:\Users\deepika.a\Desktop\Hotel\user-service"/>
+			<item value="C:\Users\deepika.a\Desktop\Hotel\auth-service"/>
+			<item value="C:\Users\deepika.a\Desktop\Hotel\api-gateway"/>
+			<item value="C:\Users\deepika.a\Desktop\Hotel\eureka-server"/>
+			<item value="C:\Users\deepika.a\Desktop\Hotel\hotel-service"/>
+			<item value="C:\Users\deepika.a\Downloads\booking-service"/>
+			<item value="C:\Users\deepika.a\Downloads\hotel-service"/>
+			<item value="C:\Users\deepika.a\Downloads\user-service"/>
+			<item value="C:\Users\deepika.a\Downloads\auth-service"/>
+			<item value="C:\Users\deepika.a\Downloads\api-gateway"/>
+			<item value="C:\Users\deepika.a\Downloads\eureka-server"/>
+		</list>
+		<list key="projectNameTemplate">
+			<item value="[artifactId]"/>
+			<item value="[artifactId]-TRUNK"/>
+			<item value="[artifactId]-[version]"/>
+			<item value="[groupId].[artifactId]"/>
+			<item value="[groupId].[artifactId]-[version]"/>
+			<item value="[name]"/>
+		</list>
+	</section>
+	<section name="org.eclipse.m2e.core.pom.overview">
+	</section>
+	<section name="org.eclipse.m2e.core.pom.dependencies">
+	</section>
+</section>

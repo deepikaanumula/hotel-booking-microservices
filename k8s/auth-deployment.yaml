@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hotel-ms
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: deepika1308/hotel-auth-service:1.0
+          ports:
+            - containerPort: 8081
+          env:
+            - name: EUREKA_SERVER_URL
+              value: http://eureka-server:8761/eureka
+          imagePullPolicy: Always

@@ -1,0 +1,39 @@
+name: CI/CD - User Service
+
+on:
+  push:
+    paths:
+      - "user-service/**"
+
+jobs:
+  build-test-push-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # ---------------- CI PART ----------------
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Build & Test
+      run: mvn -pl user-service -am clean package
+
+    - name: Login to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+    - name: Build & Push Docker Image
+      run: |
+        docker build -t deepika1308/user-service:${{ github.sha }} ./user-service
+        docker push deepika1308/user-service:${{ github.sha }}
+
+    # ---------------- CD PART ----------------
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl set image deployment/user-service \
+        user-service=deepika1308/user-service:${{ github.sha }} \
+        -n hotel-ms

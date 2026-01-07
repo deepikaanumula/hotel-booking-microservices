@@ -1,0 +1,36 @@
+name: CI/CD - Auth Service
+
+on:
+  push:
+    paths:
+      - "auth-service/**"
+
+jobs:
+  auth-service-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: Build & Test
+      run: mvn -pl auth-service -am clean package
+
+    - name: Docker Login
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+    - name: Build & Push Image
+      run: |
+        docker build -t deepika1308/hotel-auth-service:${{ github.sha }} ./auth-service
+        docker push deepika1308/hotel-auth-service:${{ github.sha }}
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl set image deployment/auth-service \
+        auth-service=deepika1308/hotel-auth-service:${{ github.sha }} \
+        -n hotel-ms

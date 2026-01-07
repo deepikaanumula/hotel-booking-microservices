@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hotel-service
+  namespace: hotel-ms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hotel-service
+  template:
+    metadata:
+      labels:
+        app: hotel-service
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-secret     # ✅ ADD THIS
+      containers:
+        - name: hotel-service
+          image: deepika1308/hotel-hotel-service:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8083
+          env:
+            - name: EUREKA_SERVER_URL
+              value: http://eureka-server:8761/eureka
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hotel-service
+  namespace: hotel-ms
+spec:
+  selector:
+    app: hotel-service
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083
+  type: ClusterIP

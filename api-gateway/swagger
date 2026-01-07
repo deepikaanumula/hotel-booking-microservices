@@ -1,0 +1,11 @@
+auth
+http://localhost:8081/swagger-ui.html
+user
+http://localhost:8082/swagger-ui.html   
+hotel
+http://localhost:8083/swagger-ui.html  
+
+booking
+http://localhost:8084/swagger-ui.html  
+
+
