@@ -10,33 +10,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # ---------------- Checkout code ----------------
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # ---------------- CI PART ----------------
+    # ---------------- Setup Java ----------------
     - name: Set up Java
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
 
+    # ---------------- Build & Test ----------------
     - name: Build & Test
       run: |
-       cd user-service
-       mvn clean package
+        cd ./            # root folder (parent pom.xml)
+        mvn -pl user-service -am clean verify
 
-
+    # ---------------- Login to Docker Hub ----------------
     - name: Login to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
+    # ---------------- Build & Push Docker Image ----------------
     - name: Build & Push Docker Image
       run: |
         docker build -t deepika1308/user-service:${{ github.sha }} ./user-service
         docker push deepika1308/user-service:${{ github.sha }}
+        docker tag deepika1308/user-service:${{ github.sha }} deepika1308/user-service:latest
+        docker push deepika1308/user-service:latest
 
-    # ---------------- CD PART ----------------
+    # ---------------- Deploy to Kubernetes ----------------
     - name: Deploy to Kubernetes
       run: |
         kubectl set image deployment/user-service \
-        user-service=deepika1308/user-service:${{ github.sha }} \
-        -n hotel-ms
+          user-service=deepika1308/user-service:${{ github.sha }} \
+          -n hotel-ms
+        kubectl rollout status deployment/user-service -n hotel-ms
