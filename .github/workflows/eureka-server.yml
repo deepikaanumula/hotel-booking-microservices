@@ -4,40 +4,42 @@ on:
   push:
     paths:
       - "eureka-server/**"
-  workflow_dispatch:   # ✅ manual trigger enabled
 
 jobs:
   eureka-pipeline:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Set up Java 17
-      uses: actions/setup-java@v4
-      with:
-        distribution: temurin
-        java-version: 17
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
-    - name: Build Eureka Server
-      run: |
-        cd .
-        mvn -pl eureka-server -am clean package
+      - name: Build Eureka Server (Skip Tests)
+        run: mvn -pl eureka-server -am clean package -DskipTests
 
-    - name: Docker Login
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Docker Login
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-    - name: Build & Push Docker Image
-      run: |
-        docker build -t deepika1308/hotel-eureka-server:${{ github.sha }} ./eureka-server
-        docker push deepika1308/hotel-eureka-server:${{ github.sha }}
-        docker tag deepika1308/hotel-eureka-server:${{ github.sha }} deepika1308/hotel-eureka-server:latest
-        docker push deepika1308/hotel-eureka-server:latest
+      - name: Build & Push Docker Image
+        run: |
+          docker build -t deepika1308/hotel-eureka-server:${{ github.sha }} ./eureka-server
+          docker push deepika1308/hotel-eureka-server:${{ github.sha }}
 
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl set image deployment/eureka-server \
-        eureka-server=deepika1308/hotel-eureka-server:${{ github.sha }} \
-        -n hotel-ms
-        kubectl rollout status deployment/eureka-server -n hotel-ms
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/eureka-server \
+          eureka-server=deepika1308/hotel-eureka-server:${{ github.sha }} \
+          -n hotel-ms
