@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - "eureka-server/**"
+  workflow_dispatch:
 
 jobs:
   eureka-pipeline:
